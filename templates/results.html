@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recommendations</title>
+</head>
+<body>
+
+    <h2>Rule-Based Recommendations</h2>
+
+    {% if results is not none and results|length > 0 %}
+        <table border="1">
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>Mood</th>
+                <th>Age Group</th>
+                <th>Popularity</th>
+            </tr>
+
+            {% for _, row in results.iterrows() %}
+            <tr>
+                <td>
+                    <a href="/book/{{ row.title | urlencode }}">
+                        {{ row.title }}
+                    </a>
+                </td>
+                <td>{{ row.authors }}</td>
+                <td>{{ row.genre }}</td>
+                <td>{{ row.mood }}</td>
+                <td>{{ row.target_age_group }}</td>
+                <td>{{ row.popularity_level }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No rule-based recommendations found.</p>
+    {% endif %}
+
+    <hr>
+
+    <h2>ML-Based Similar Books</h2>
+
+    {% if ml_results is not none and ml_results|length > 0 %}
+        <table border="1">
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>Mood</th>
+                <th>Popularity</th>
+            </tr>
+
+            {% for _, row in ml_results.iterrows() %}
+            <tr>
+                <td>
+                    <a href="/book/{{ row.title | urlencode }}">
+                        {{ row.title }}
+                    </a>
+                </td>
+                <td>{{ row.authors }}</td>
+                <td>{{ row.genre }}</td>
+                <td>{{ row.mood }}</td>
+                <td>{{ row.popularity_level }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No ML-based recommendations found.</p>
+    {% endif %}
+
+    <br>
+    <a href="/">Go Back</a>
+
+</body>
+</html>

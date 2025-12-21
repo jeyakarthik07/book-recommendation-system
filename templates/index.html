@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ML-Based Book Recommendation System</title>
+</head>
+
+<body>
+
+<h1 align="center">ML-Based Book Recommendation System</h1>
+<p align="center">Search books using different details</p>
+
+<hr>
+
+<form action="/recommend" method="post" align="center">
+
+    <div>
+        <label><b>Book Name</b></label><br>
+        <input type="text" name="book_name" size="40">
+    </div>
+
+    <br>
+
+    <div>
+        <label><b>Author</b></label><br>
+        <input type="text" name="author" size="40">
+    </div>
+
+    <br>
+
+    <div>
+        <label><b>ISBN / ISBN13</b></label><br>
+        <input type="text" name="isbn" size="40">
+    </div>
+
+    <br>
+
+    <div>
+        <label><b>Publisher</b></label><br>
+        <input type="text" name="publisher" size="40">
+    </div>
+
+    <br>
+
+    <div>
+        <label><b>Mood</b></label><br>
+        <select name="mood">
+    <option value="">Any</option>
+    {% for m in moods %}
+        <option value="{{ m }}">{{ m }}</option>
+    {% endfor %}
+</select>
+
+    </div>
+
+    <br>
+
+    <div>
+        <label><b>Genre</b></label><br>
+        <select name="genre">
+    <option value="">Any</option>
+    {% for g in genres %}
+        <option value="{{ g }}">{{ g }}</option>
+    {% endfor %}
+</select>
+
+    </div>
+
+    <br><br>
+
+    <button type="submit">🔍 Search</button>
+
+</form>
+
+<hr>
+
+<h2 align="center">Popular Books</h2>
+
+<ul align="center">
+    {% for _, row in popular_books.iterrows() %}
+        <li>{{ row.title }} — {{ row.authors }}</li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Details</title>
+</head>
+<body>
+
+{% if book is not none %}
+
+<h1>{{ book.title }}</h1>
+
+<p><b>Author:</b> {{ book.authors }}</p>
+<p><b>Publisher:</b> {{ book.publisher }}</p>
+<p><b>Genre:</b> {{ book.genre }}</p>
+<p><b>Mood:</b> {{ book.mood }}</p>
+<p><b>ISBN:</b> {{ book.isbn }}</p>
+<p><b>ISBN13:</b> {{ book.isbn13 }}</p>
+<p><b>Pages:</b> {{ book.pages }}</p>
+<p><b>Rating:</b> {{ book.average_rating }}</p>
+<p><b>Ratings Count:</b> {{ book.ratings_count }}</p>
+
+<h3>Description</h3>
+<p>{{ book.description }}</p>
+
+{% else %}
+<p>No book found.</p>
+{% endif %}
+
+<br>
+<a href="/">⬅ Go Back</a>
+
+</body>
+</html>
