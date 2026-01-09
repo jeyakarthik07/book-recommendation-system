@@ -6,12 +6,19 @@
 
 <body>
 
-<h1 align="center">ML-Based Book Recommendation System</h1>
-<p align="center">Search books using different details</p>
+<!-- TOP NAV -->
+<div style="margin-bottom:15px;">
+    <a href="javascript:location.reload()" title="Refresh">🔄</a>
+</div>
+
+<div style="max-width:1000px; margin:auto; text-align:center;">
+
+<h1>ML-Based Book Recommendation System</h1>
+<p>Search books using different details</p>
 
 <hr>
 
-<form action="/recommend" method="post" align="center">
+<form action="/recommend" method="post">
 
     <div>
         <label><b>Book Name</b></label><br>
@@ -44,12 +51,11 @@
     <div>
         <label><b>Mood</b></label><br>
         <select name="mood">
-    <option value="">Any</option>
-    {% for m in moods %}
-        <option value="{{ m }}">{{ m }}</option>
-    {% endfor %}
-</select>
-
+            <option value="">Any</option>
+            {% for m in moods %}
+                <option value="{{ m }}">{{ m }}</option>
+            {% endfor %}
+        </select>
     </div>
 
     <br>
@@ -57,29 +63,37 @@
     <div>
         <label><b>Genre</b></label><br>
         <select name="genre">
-    <option value="">Any</option>
-    {% for g in genres %}
-        <option value="{{ g }}">{{ g }}</option>
-    {% endfor %}
-</select>
-
+            <option value="">Any</option>
+            {% for g in genres %}
+                <option value="{{ g }}">{{ g }}</option>
+            {% endfor %}
+        </select>
     </div>
 
     <br><br>
 
-    <button type="submit">🔍 Search</button>
+    <!-- Bigger Search Button -->
+    <button type="submit" style="font-size:18px; padding:6px 14px;">
+        🔍 Search
+    </button>
 
 </form>
 
 <hr>
 
-<h2 align="center">Popular Books</h2>
+<h2>Popular Books</h2>
 
-<ul align="center">
+<ul style="list-style:none; padding:0;">
     {% for _, row in popular_books.iterrows() %}
-        <li>{{ row.title }} — {{ row.authors }}</li>
+        <li style="margin:6px 0;">
+            <a href="/book/{{ row.isbn }}">
+                {{ row.title }} — {{ row.authors }}
+            </a>
+        </li>
     {% endfor %}
 </ul>
+
+</div>
 
 </body>
 </html>

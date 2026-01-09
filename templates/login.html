@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login | Book Recommendation System</title>
+</head>
+<body>
+
+<h2>User Login / Sign Up</h2>
+
+<hr>
+
+<!-- LOGIN -->
+<h3>Sign In</h3>
+<form method="post" action="/login">
+    <input type="hidden" name="action" value="login">
+
+    <label>Email (User ID)</label><br>
+    <input type="email" name="user_id" required><br><br>
+
+    <label>Password</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <button type="submit">Login</button>
+</form>
+
+<hr>
+
+<!-- REGISTER -->
+<h3>Create New Account</h3>
+<form method="post" action="/register">
+
+    <label>Email (User ID)</label><br>
+    <input type="email" name="user_id" required><br><br>
+
+    <label>Username (unique)</label><br>
+    <input type="text" name="username" required><br><br>
+
+    <label>Password</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <label>Confirm Password</label><br>
+    <input type="password" name="confirm" required><br><br>
+
+    <button type="submit">Create Account</button>
+</form>
+
+<hr>
+
+<!-- ADMIN (UI ONLY) -->
+<h3>Admin Login (Coming Soon)</h3>
+<p><i>Admin functionality will be added later.</i></p>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul>
+      {% for msg in messages %}
+        <li>{{ msg }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+</body>
+</html>

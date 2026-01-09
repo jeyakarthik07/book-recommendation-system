@@ -1,11 +1,11 @@
 import os
 from flask import Flask, render_template, request
 from backend.recommender import df
+from flask import session, redirect, url_for, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+from backend.db import init_db, get_db_connection
 from backend.ml_recommender import recommend_similar_books
 
-# --------------------------------------------------
-# App setup
-# --------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 app = Flask(
@@ -14,6 +14,10 @@ app = Flask(
     static_folder=os.path.join(BASE_DIR, "static")
 )
 
+app.secret_key = "dev-secret-key"  # change later
+init_db()
+
+
 # --------------------------------------------------
 # Home page
 # --------------------------------------------------
@@ -21,11 +25,11 @@ app = Flask(
 def home():
     popular_books = (
         df.sort_values(by="ratings_count", ascending=False)
-          .head(5)[["title", "authors"]]
+        .head(5)[["title", "authors", "isbn"]]
     )
 
-    moods = sorted(df["mood"].dropna().unique())
-    genres = sorted(df["genre"].dropna().unique())
+    moods = sorted(df["mood"].dropna().str.strip().unique())
+    genres = sorted(df["genre"].dropna().str.strip().unique())
 
     return render_template(
         "index.html",
@@ -35,21 +39,46 @@ def home():
     )
 
 # --------------------------------------------------
-# Recommend / Search
+# Book detail page
+# --------------------------------------------------
+@app.route("/book/<isbn>")
+def book_detail(isbn):
+    data = df.copy()
+    data["isbn"] = data["isbn"].astype(str).str.strip()
+
+    book = data[data["isbn"] == isbn]
+
+    if book.empty:
+        return render_template(
+            "book_detail.html",
+            book=None,
+            ml_results=None
+        )
+
+    ml_results = recommend_similar_books(book.iloc[0]["title"], top_n=5)
+
+    return render_template(
+        "book_detail.html",
+        book=book.iloc[0],
+        ml_results=ml_results
+    )
+
+# --------------------------------------------------
+# Recommend / Search  (STABLE + FULL RESULTS)
 # --------------------------------------------------
 @app.route("/recommend", methods=["POST"])
 def recommend():
     book_name = (request.form.get("book_name") or "").strip().lower()
     author = (request.form.get("author") or "").strip().lower()
     isbn = (request.form.get("isbn") or "").strip()
-    publisher = (request.form.get("publisher") or "").strip()
-    mood = (request.form.get("mood") or "").strip()
-    genre = (request.form.get("genre") or "").strip()
+    publisher = (request.form.get("publisher") or "").strip().lower()
+    mood = (request.form.get("mood") or "").strip().lower()
+    genre = (request.form.get("genre") or "").strip().lower()
 
     data = df.copy()
 
-    # Defensive normalization
-    data["title_lower"] = data["title"].astype(str).str.strip().str.lower()
+    # NORMALIZATION
+    data["title_lower"] = data["title"].astype(str).str.lower().str.strip()
     data["author_clean"] = (
         data["authors"]
         .astype(str)
@@ -57,39 +86,33 @@ def recommend():
         .str.replace(".", "", regex=False)
         .str.replace(" ", "", regex=False)
     )
+    data["mood_lower"] = data["mood"].astype(str).str.lower().str.strip()
+    data["genre_lower"] = data["genre"].astype(str).str.lower().str.strip()
+    data["isbn"] = data["isbn"].astype(str).str.strip()
 
-    # --------------------------------------------------
-    # ISBN → DETAIL PAGE ONLY
-    # --------------------------------------------------
-    if isbn != "":
-        matches = data[data["isbn"].astype(str) == isbn]
-
+    # ISBN search → detail
+    if isbn:
+        book = data[data["isbn"] == isbn]
         return render_template(
             "book_detail.html",
-            book=matches.iloc[0] if not matches.empty else None,
+            book=book.iloc[0] if not book.empty else None,
             ml_results=None
         )
 
-    # --------------------------------------------------
-    # BOOK NAME → EXACT → DETAIL, ELSE PARTIAL → RESULTS
-    # --------------------------------------------------
-    if book_name != "":
+    # BOOK NAME
+    if book_name:
         exact = data[data["title_lower"] == book_name]
 
-        # Exact title → book detail
         if not exact.empty:
-            ml_results = recommend_similar_books(exact.iloc[0]["title"], top_n=5)
-
+            ml_results = recommend_similar_books(exact.iloc[0]["title"])
             return render_template(
                 "book_detail.html",
                 book=exact.iloc[0],
                 ml_results=ml_results
             )
 
-        # Partial title → results + ML
         results = data[data["title_lower"].str.contains(book_name, na=False)]
-
-        ml_results = recommend_similar_books(book_name, top_n=5)
+        ml_results = recommend_similar_books(book_name)
 
         return render_template(
             "results.html",
@@ -97,81 +120,110 @@ def recommend():
             ml_results=ml_results
         )
 
+    # AUTHOR
+    if author:
+        key = author.replace(".", "").replace(" ", "")
+        results = data[data["author_clean"].str.contains(key, na=False)]
+        ml_results = recommend_similar_books(author)
 
-    # --------------------------------------------------
+        return render_template(
+            "results.html",
+            results=results,
+            ml_results=ml_results
+        )
+
     # PUBLISHER
-    # --------------------------------------------------
-    if publisher != "":
-        results = data[
-            data["publisher"].astype(str).str.contains(publisher, case=False, na=False)
+    if publisher:
+        results = data[data["publisher"].astype(str).str.lower().str.contains(publisher, na=False)]
+        ml_results = recommend_similar_books(publisher)
+
+        return render_template(
+            "results.html",
+            results=results,
+            ml_results=ml_results
+        )
+
+    # SMART FILTER LOGIC
+    filtered = data
+
+    if mood and genre:
+        filtered = data[
+            (data["mood_lower"] == mood) &
+            (data["genre_lower"] == genre)
         ]
 
-        return render_template(
-            "results.html",
-            results=results,
-            ml_results = recommend_similar_books(publisher, top_n=5)
-        )
+        if filtered.empty:
+            filtered = data[data["mood_lower"] == mood]
 
-    # --------------------------------------------------
-    # AUTHOR
-    # --------------------------------------------------
-    if author != "":
-        author_key = author.replace(".", "").replace(" ", "")
-        results = data[data["author_clean"].str.contains(author_key, na=False)]
+        if filtered.empty:
+            filtered = data[data["genre_lower"] == genre]
 
-        ml_results = recommend_similar_books(author, top_n=5)
+    elif mood:
+        filtered = data[data["mood_lower"] == mood]
 
-        return render_template(
-            "results.html",
-            results=results,
-            ml_results=ml_results
-        )
+    elif genre:
+        filtered = data[data["genre_lower"] == genre]
 
-
-    # --------------------------------------------------
-    # FILTERS (MOOD / GENRE)
-    # --------------------------------------------------
-    if mood:
-        data = data[data["mood"].str.lower() == mood.lower()]
-
-    if genre:
-        data = data[data["genre"].str.lower() == genre.lower()]
-
-    ml_results = recommend_similar_books(
-        f"{mood} {genre}".strip(), top_n=5
-    )
-
+    # 🔹 IMPORTANT: return FULL results (no slicing)
     return render_template(
         "results.html",
-        results=data.head(10),
-        ml_results=ml_results
+        results=filtered,
+        ml_results=None
     )
 
 
-# --------------------------------------------------
-# BOOK DETAIL PAGE (CLICK FROM RESULTS)
-# --------------------------------------------------
-@app.route("/book/<path:title>")
-def book_detail(title):
-    title = title.lower().strip()
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        action = request.form.get("action")
 
-    data = df.copy()
-    data["title_lower"] = data["title"].astype(str).str.strip().str.lower()
+        user_id = request.form.get("user_id")
+        password = request.form.get("password")
 
-    book = data[data["title_lower"] == title]
+        conn = get_db_connection()
+        user = conn.execute(
+            "SELECT * FROM users WHERE user_id = ?", (user_id,)
+        ).fetchone()
+        conn.close()
 
-    ml_results = None
-    if not book.empty:
-        ml_results = recommend_similar_books(book.iloc[0]["title"], top_n=5)
+        if user and check_password_hash(user["password_hash"], password):
+            session["user_id"] = user["user_id"]
+            session["username"] = user["username"]
+            session["role"] = user["role"]
+            return redirect(url_for("home"))
 
-    return render_template(
-        "book_detail.html",
-        book=book.iloc[0] if not book.empty else None,
-        ml_results=ml_results
-    )
+        flash("Invalid login credentials")
 
-# --------------------------------------------------
-# Run app
-# --------------------------------------------------
+    return render_template("login.html")
+
+
+@app.route("/register", methods=["POST"])
+def register():
+    user_id = request.form.get("user_id")
+    username = request.form.get("username")
+    password = request.form.get("password")
+    confirm = request.form.get("confirm")
+
+    if password != confirm:
+        flash("Passwords do not match")
+        return redirect(url_for("login"))
+
+    password_hash = generate_password_hash(password)
+
+    try:
+        conn = get_db_connection()
+        conn.execute(
+            "INSERT INTO users (user_id, username, password_hash) VALUES (?, ?, ?)",
+            (user_id, username, password_hash)
+        )
+        conn.commit()
+        conn.close()
+        flash("Account created successfully. Please log in.")
+    except Exception:
+        flash("User ID or Username already exists")
+
+    return redirect(url_for("login"))
+
+
 if __name__ == "__main__":
     app.run(debug=True)

@@ -5,6 +5,17 @@
 </head>
 <body>
 
+<!-- TOP NAV -->
+<div style="margin-bottom:15px;">
+    <a href="javascript:history.back()" title="Go Back">⬅</a>
+    &nbsp;&nbsp;
+    <a href="javascript:location.reload()" title="Refresh">🔄</a>
+    &nbsp;&nbsp;
+    <a href="/" title="Home">🏠</a>
+</div>
+
+<div style="max-width:900px; margin:auto;">
+
 {% if book is not none %}
 
 <h1>{{ book.title }}</h1>
@@ -14,20 +25,47 @@
 <p><b>Genre:</b> {{ book.genre }}</p>
 <p><b>Mood:</b> {{ book.mood }}</p>
 <p><b>ISBN:</b> {{ book.isbn }}</p>
-<p><b>ISBN13:</b> {{ book.isbn13 }}</p>
 <p><b>Pages:</b> {{ book.pages }}</p>
 <p><b>Rating:</b> {{ book.average_rating }}</p>
-<p><b>Ratings Count:</b> {{ book.ratings_count }}</p>
 
 <h3>Description</h3>
 <p>{{ book.description }}</p>
+
+<hr>
+
+<h2>ML-Based Similar Books</h2>
+
+{% if ml_results is not none and ml_results|length > 0 %}
+<table border="1" width="100%">
+    <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Genre</th>
+        <th>Mood</th>
+        <th>Popularity</th>
+    </tr>
+
+    {% for _, row in ml_results.iterrows() %}
+    <tr>
+        <td>
+            <a href="/book/{{ row.isbn }}">{{ row.title }}</a>
+        </td>
+        <td>{{ row.authors }}</td>
+        <td>{{ row.genre }}</td>
+        <td>{{ row.mood }}</td>
+        <td>{{ row.popularity_level }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No similar books found.</p>
+{% endif %}
 
 {% else %}
 <p>No book found.</p>
 {% endif %}
 
-<br>
-<a href="/">⬅ Go Back</a>
+</div>
 
 </body>
 </html>

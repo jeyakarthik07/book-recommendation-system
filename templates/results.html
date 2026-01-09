@@ -2,75 +2,187 @@
 <html>
 <head>
     <title>Recommendations</title>
+
+    <style>
+        /* ---------- TOP NAV ---------- */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #f2f2f2;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            z-index: 1000;
+        }
+
+        /* ---------- PAGE CONTAINER ---------- */
+        .container {
+            max-width: 1100px;
+            margin: 80px auto 40px auto;
+        }
+
+        /* ---------- TABLE ---------- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed; /* 🔑 FIX COLUMN WIDTH */
+        }
+
+        th, td {
+            border: 1px solid #333;
+            padding: 8px;
+            word-wrap: break-word;   /* 🔑 WRAP LONG TEXT */
+            white-space: normal;
+        }
+
+        th {
+            background: #f9f9f9;
+            text-align: center;
+        }
+
+        /* Column widths */
+        .col-title { width: 40%; }
+        .col-author { width: 18%; }
+        .col-genre { width: 15%; }
+        .col-mood { width: 10%; }
+        .col-age { width: 8%; }
+        .col-pop { width: 9%; }
+
+        /* ---------- PAGINATION ---------- */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin: 20px 0;
+            gap: 12px;
+            font-size: 18px;
+        }
+
+        .pagination button {
+            padding: 4px 12px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
 </head>
+
 <body>
 
-    <h2>Rule-Based Recommendations</h2>
+<!-- TOP NAV -->
+<div class="top-nav">
+    <a href="javascript:history.back()">⬅</a>
+    &nbsp;&nbsp;
+    <a href="javascript:location.reload()">🔄</a>
+    &nbsp;&nbsp;
+    <a href="/">🏠</a>
+</div>
 
-    {% if results is not none and results|length > 0 %}
-        <table border="1">
-            <tr>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Genre</th>
-                <th>Mood</th>
-                <th>Age Group</th>
-                <th>Popularity</th>
-            </tr>
+<div class="container">
 
-            {% for _, row in results.iterrows() %}
-            <tr>
-                <td>
-                    <a href="/book/{{ row.title | urlencode }}">
-                        {{ row.title }}
-                    </a>
-                </td>
-                <td>{{ row.authors }}</td>
-                <td>{{ row.genre }}</td>
-                <td>{{ row.mood }}</td>
-                <td>{{ row.target_age_group }}</td>
-                <td>{{ row.popularity_level }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        <p>No rule-based recommendations found.</p>
-    {% endif %}
+<h2>Rule-Based Recommendations</h2>
 
-    <hr>
+{% if results is not none and results|length > 0 %}
+<table>
+    <tr>
+        <th class="col-title">Title</th>
+        <th class="col-author">Author</th>
+        <th class="col-genre">Genre</th>
+        <th class="col-mood">Mood</th>
+        <th class="col-age">Age Group</th>
+        <th class="col-pop">Popularity</th>
+    </tr>
 
-    <h2>ML-Based Similar Books</h2>
+    {% for _, row in results.iterrows() %}
+    <tr class="result-row">
+        <td class="col-title">
+            <a href="/book/{{ row.isbn }}">{{ row.title }}</a>
+        </td>
+        <td class="col-author">{{ row.authors }}</td>
+        <td class="col-genre">{{ row.genre }}</td>
+        <td class="col-mood">{{ row.mood }}</td>
+        <td class="col-age">{{ row.target_age_group }}</td>
+        <td class="col-pop">{{ row.popularity_level }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No rule-based recommendations found.</p>
+{% endif %}
 
-    {% if ml_results is not none and ml_results|length > 0 %}
-        <table border="1">
-            <tr>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Genre</th>
-                <th>Mood</th>
-                <th>Popularity</th>
-            </tr>
+<!-- PAGINATION (ABOVE ML SECTION) -->
+<div class="pagination">
+    <button onclick="prevPage()">⬅</button>
+    <span id="pageInfo">Page 1</span>
+    <button onclick="nextPage()">➡</button>
+</div>
 
-            {% for _, row in ml_results.iterrows() %}
-            <tr>
-                <td>
-                    <a href="/book/{{ row.title | urlencode }}">
-                        {{ row.title }}
-                    </a>
-                </td>
-                <td>{{ row.authors }}</td>
-                <td>{{ row.genre }}</td>
-                <td>{{ row.mood }}</td>
-                <td>{{ row.popularity_level }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        <p>No ML-based recommendations found.</p>
-    {% endif %}
+<hr>
 
-    <br>
-    <a href="/">Go Back</a>
+<h2>ML-Based Similar Books</h2>
+
+{% if ml_results is not none and ml_results|length > 0 %}
+<table>
+    <tr>
+        <th class="col-title">Title</th>
+        <th class="col-author">Author</th>
+        <th class="col-genre">Genre</th>
+        <th class="col-mood">Mood</th>
+        <th class="col-pop">Popularity</th>
+    </tr>
+
+    {% for _, row in ml_results.iterrows() %}
+    <tr>
+        <td class="col-title">
+            <a href="/book/{{ row.isbn }}">{{ row.title }}</a>
+        </td>
+        <td class="col-author">{{ row.authors }}</td>
+        <td class="col-genre">{{ row.genre }}</td>
+        <td class="col-mood">{{ row.mood }}</td>
+        <td class="col-pop">{{ row.popularity_level }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No ML-based recommendations found.</p>
+{% endif %}
+
+</div>
+
+<!-- ---------- PAGINATION SCRIPT ---------- -->
+<script>
+    const rows = document.querySelectorAll(".result-row");
+    const rowsPerPage = 10;
+    let currentPage = 1;
+    const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+    function showPage(page) {
+        if (page < 1 || page > totalPages) return;
+
+        currentPage = page;
+
+        rows.forEach((row, index) => {
+            row.style.display =
+                index >= (page - 1) * rowsPerPage &&
+                index < page * rowsPerPage
+                    ? ""
+                    : "none";
+        });
+
+        document.getElementById("pageInfo").innerText =
+            "Page " + page + " of " + totalPages;
+    }
+
+    function nextPage() {
+        showPage(currentPage + 1);
+    }
+
+    function prevPage() {
+        showPage(currentPage - 1);
+    }
+
+    showPage(1);
+</script>
 
 </body>
 </html>
