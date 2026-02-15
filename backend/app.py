@@ -1,9 +1,9 @@
 import os
-from flask import Flask, render_template, request
-from backend.recommender import df
-from flask import session, redirect, url_for, flash
+import re
+from flask import Flask, render_template, request, session, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from backend.db import init_db, get_db_connection
+from backend.recommender import df
 from backend.ml_recommender import recommend_similar_books
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -14,15 +14,19 @@ app = Flask(
     static_folder=os.path.join(BASE_DIR, "static")
 )
 
-app.secret_key = "dev-secret-key"  # change later
+app.secret_key = "dev-secret-key"
 init_db()
 
 
 # --------------------------------------------------
-# Home page
+# Home page (Protected)
 # --------------------------------------------------
 @app.route("/")
 def home():
+    # 🔐 If user not logged in → redirect to login
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
     popular_books = (
         df.sort_values(by="ratings_count", ascending=False)
         .head(5)[["title", "authors", "isbn"]]
@@ -35,14 +39,19 @@ def home():
         "index.html",
         popular_books=popular_books,
         moods=moods,
-        genres=genres
+        genres=genres,
+        username=session.get("username")
     )
 
+
 # --------------------------------------------------
-# Book detail page
+# Book detail page (Protected)
 # --------------------------------------------------
 @app.route("/book/<isbn>")
 def book_detail(isbn):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
     data = df.copy()
     data["isbn"] = data["isbn"].astype(str).str.strip()
 
@@ -63,11 +72,15 @@ def book_detail(isbn):
         ml_results=ml_results
     )
 
+
 # --------------------------------------------------
-# Recommend / Search  (STABLE + FULL RESULTS)
+# Recommend / Search (Protected)
 # --------------------------------------------------
 @app.route("/recommend", methods=["POST"])
 def recommend():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
     book_name = (request.form.get("book_name") or "").strip().lower()
     author = (request.form.get("author") or "").strip().lower()
     isbn = (request.form.get("isbn") or "").strip()
@@ -164,7 +177,6 @@ def recommend():
     elif genre:
         filtered = data[data["genre_lower"] == genre]
 
-    # 🔹 IMPORTANT: return FULL results (no slicing)
     return render_template(
         "results.html",
         results=filtered,
@@ -172,40 +184,64 @@ def recommend():
     )
 
 
+# --------------------------------------------------
+# Login
+# --------------------------------------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        action = request.form.get("action")
-
-        user_id = request.form.get("user_id")
+        user_id = request.form.get("user_id").strip()
         password = request.form.get("password")
 
         conn = get_db_connection()
         user = conn.execute(
-            "SELECT * FROM users WHERE user_id = ?", (user_id,)
+            "SELECT * FROM users WHERE user_id = ?",
+            (user_id,)
         ).fetchone()
         conn.close()
 
         if user and check_password_hash(user["password_hash"], password):
             session["user_id"] = user["user_id"]
             session["username"] = user["username"]
-            session["role"] = user["role"]
             return redirect(url_for("home"))
-
-        flash("Invalid login credentials")
+        else:
+            flash("Invalid Email or Password.")
 
     return render_template("login.html")
 
 
+# --------------------------------------------------
+# Register
+# --------------------------------------------------
+
 @app.route("/register", methods=["POST"])
 def register():
-    user_id = request.form.get("user_id")
-    username = request.form.get("username")
+    user_id = request.form.get("user_id").strip()
+    username = request.form.get("username").strip()
     password = request.form.get("password")
     confirm = request.form.get("confirm")
 
+    # ---------------- VALIDATION ----------------
+
+    # Email format validation
+    email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    if not re.match(email_pattern, user_id):
+        flash("Use proper email id.")
+        return redirect(url_for("login"))
+
+    # Password length
+    if len(password) < 8:
+        flash("Password should have at least 8 characters.")
+        return redirect(url_for("login"))
+
+    # Confirm password
     if password != confirm:
-        flash("Passwords do not match")
+        flash("Password and Confirm Password must be same.")
+        return redirect(url_for("login"))
+
+    # Username empty check
+    if not username:
+        flash("Username cannot be empty.")
         return redirect(url_for("login"))
 
     password_hash = generate_password_hash(password)
@@ -218,10 +254,21 @@ def register():
         )
         conn.commit()
         conn.close()
+
         flash("Account created successfully. Please log in.")
     except Exception:
-        flash("User ID or Username already exists")
+        flash("User ID or Username already exists.")
 
+    return redirect(url_for("login"))
+
+
+
+# --------------------------------------------------
+# Logout
+# --------------------------------------------------
+@app.route("/logout")
+def logout():
+    session.clear()
     return redirect(url_for("login"))
 
 
