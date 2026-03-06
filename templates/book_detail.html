@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Book Details</title>
+    <title>📚Book Details</title>
 </head>
+{% extends "base.html" %}
+
+{% block content %}
 <body>
 
 <!-- TOP NAV -->
-<div style="margin-bottom:15px;">
-    <a href="javascript:history.back()" title="Go Back">⬅</a>
-    &nbsp;&nbsp;
-    <a href="javascript:location.reload()" title="Refresh">🔄</a>
-    &nbsp;&nbsp;
-    <a href="/" title="Home">🏠</a>
-</div>
+
 
 <div style="max-width:900px; margin:auto;">
 
 {% if book is not none %}
-
+<center>
 <h1>{{ book.title }}</h1>
 
 <p><b>Author:</b> {{ book.authors }}</p>
@@ -30,11 +27,11 @@
 
 <h3>Description</h3>
 <p>{{ book.description }}</p>
-
+</center>
 <hr>
-
-<h2>ML-Based Similar Books</h2>
-
+<center>
+<h2>Similar Books Based on your Search💖.</h2>
+</center>
 {% if ml_results is not none and ml_results|length > 0 %}
 <table border="1" width="100%">
     <tr>
@@ -58,14 +55,19 @@
     {% endfor %}
 </table>
 {% else %}
-<p>No similar books found.</p>
+<center>
+<p>🤔Thinking What you may like!.</p>
+</center>
 {% endif %}
 
 {% else %}
-<p>No book found.</p>
+<center>
+<h3>Sorry😕, I think there is no match for your search. Try searching using other details😊.</h3>
+</center>
 {% endif %}
 
 </div>
 
 </body>
 </html>
+{% endblock %}

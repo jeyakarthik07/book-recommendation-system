@@ -66,22 +66,18 @@
         }
     </style>
 </head>
+{% extends "base.html" %}
 
+{% block content %}
 <body>
 
 <!-- TOP NAV -->
-<div class="top-nav">
-    <a href="javascript:history.back()">⬅</a>
-    &nbsp;&nbsp;
-    <a href="javascript:location.reload()">🔄</a>
-    &nbsp;&nbsp;
-    <a href="/">🏠</a>
-</div>
+
 
 <div class="container">
-
-<h2>Rule-Based Recommendations</h2>
-
+<center>
+<h2>From Your Search🔎</h2>
+</center>
 {% if results is not none and results|length > 0 %}
 <table>
     <tr>
@@ -107,7 +103,9 @@
     {% endfor %}
 </table>
 {% else %}
-<p>No rule-based recommendations found.</p>
+<center>
+<h3>Sorry😕, I think there is no match for your search. Try searching using other details😊.</h3>
+</center>
 {% endif %}
 
 <!-- PAGINATION (ABOVE ML SECTION) -->
@@ -118,9 +116,9 @@
 </div>
 
 <hr>
-
-<h2>ML-Based Similar Books</h2>
-
+<center>
+<h2>Similar Books Based on your Search💖.</h2>
+</center>
 {% if ml_results is not none and ml_results|length > 0 %}
 <table>
     <tr>
@@ -144,7 +142,9 @@
     {% endfor %}
 </table>
 {% else %}
-<p>No ML-based recommendations found.</p>
+<center>
+<p>🤔Thinking What you may like!.</p>
+</center>
 {% endif %}
 
 </div>
@@ -186,3 +186,4 @@
 
 </body>
 </html>
+{% endblock %}

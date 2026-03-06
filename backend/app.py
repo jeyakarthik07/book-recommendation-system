@@ -17,6 +17,9 @@ app = Flask(
 app.secret_key = "dev-secret-key"
 init_db()
 
+@app.context_processor
+def inject_user():
+    return dict(username=session.get("username"))
 
 # --------------------------------------------------
 # Home page (Protected)

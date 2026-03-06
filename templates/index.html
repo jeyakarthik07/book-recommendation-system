@@ -1,110 +1,106 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>ML-Based Book Recommendation System</title>
-</head>
+{% extends "base.html" %}
 
-<body>
-
-<div style="position:absolute; top:20px; right:30px;">
-    <span style="margin-right:15px;">
-        Welcome, {{ username }}
-    </span>
-    <a href="/logout" 
-       style="text-decoration:none; padding:8px 12px; background:#888; color:white; border-radius:5px;">
-       Logout
-    </a>
-</div>
-
-
-<!-- TOP NAV -->
-<div style="margin-bottom:15px;">
-    <a href="javascript:location.reload()" title="Refresh">🔄</a>
-</div>
+{% block content %}
 
 <div style="max-width:1000px; margin:auto; text-align:center;">
 
-<h1>ML-Based Book Recommendation System</h1>
-<p>Search books using different details</p>
+<h1>-----MiniBooks-----</h1>
+
+<h2>Search your books you are looking for ✨</h2>
+
+<h3>Using different details</h3>
+
+<h5>(Don't use any symbol while searching)</h5>
 
 <hr>
 
 <form action="/recommend" method="post">
 
-    <div>
-        <label><b>Book Name</b></label><br>
-        <input type="text" name="book_name" size="40">
-    </div>
+<div>
+<label><b>Book Name</b></label><br>
+<input type="text" name="book_name" size="40">
+</div>
 
-    <br>
+<br>
 
-    <div>
-        <label><b>Author</b></label><br>
-        <input type="text" name="author" size="40">
-    </div>
+<div>
+<label><b>Author</b></label><br>
+<input type="text" name="author" size="40">
+</div>
 
-    <br>
+<br>
 
-    <div>
-        <label><b>ISBN / ISBN13</b></label><br>
-        <input type="text" name="isbn" size="40">
-    </div>
+<div>
+<label><b>ISBN / ISBN13</b></label><br>
+<input type="text" name="isbn" size="40">
+</div>
 
-    <br>
+<br>
 
-    <div>
-        <label><b>Publisher</b></label><br>
-        <input type="text" name="publisher" size="40">
-    </div>
+<div>
+<label><b>Publisher</b></label><br>
+<input type="text" name="publisher" size="40">
+</div>
 
-    <br>
+<br>
 
-    <div>
-        <label><b>Mood</b></label><br>
-        <select name="mood">
-            <option value="">Any</option>
-            {% for m in moods %}
-                <option value="{{ m }}">{{ m }}</option>
-            {% endfor %}
-        </select>
-    </div>
+<div>
+<label><b>Mood</b></label><br>
 
-    <br>
+<select name="mood">
+<option value="">Any</option>
 
-    <div>
-        <label><b>Genre</b></label><br>
-        <select name="genre">
-            <option value="">Any</option>
-            {% for g in genres %}
-                <option value="{{ g }}">{{ g }}</option>
-            {% endfor %}
-        </select>
-    </div>
+{% for m in moods %}
+<option value="{{ m }}">{{ m }}</option>
+{% endfor %}
 
-    <br><br>
+</select>
+</div>
 
-    <!-- Bigger Search Button -->
-    <button type="submit" style="font-size:18px; padding:6px 14px;">
-        🔍 Search
-    </button>
+<br>
+
+<div>
+<label><b>Genre</b></label><br>
+
+<select name="genre">
+
+<option value="">Any</option>
+
+{% for g in genres %}
+<option value="{{ g }}">{{ g }}</option>
+{% endfor %}
+
+</select>
+</div>
+
+<br><br>
+
+<button type="submit" style="font-size:18px; padding:6px 14px;">
+🔍 Search
+</button>
 
 </form>
 
 <hr>
 
-<h2>Popular Books</h2>
+<h2>🏆 Popular Books</h2>
+
+<h4>Today trendings ✨</h4>
 
 <ul style="list-style:none; padding:0;">
-    {% for _, row in popular_books.iterrows() %}
-        <li style="margin:6px 0;">
-            <a href="/book/{{ row.isbn }}">
-                {{ row.title }} — {{ row.authors }}
-            </a>
-        </li>
-    {% endfor %}
+
+{% for _, row in popular_books.iterrows() %}
+
+<li style="margin:6px 0;">
+<a href="/book/{{ row.isbn }}">
+{{ row.title }} — {{ row.authors }}
+</a>
+</li>
+
+{% endfor %}
+
 </ul>
 
 </div>
 
-</body>
-</html>
+{% endblock %}

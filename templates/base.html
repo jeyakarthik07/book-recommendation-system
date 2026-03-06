@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MiniBooks</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Segoe UI, Arial;
+}
+
+/* page content spacing because navbar is fixed */
+
+.page-content{
+    margin-top:80px;
+    padding:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+    <h1>Hello Under Construction</h1>
+
+{% include "navbar.html" %}
+
+<div class="page-content">
+
+{% block content %}
+{% endblock %}
+
+</div>
+
+</body>
+</html>
