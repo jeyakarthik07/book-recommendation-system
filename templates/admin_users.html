@@ -1,0 +1,77 @@
+{% include "navbar.html" %}
+
+<div style="margin-top:200px;padding:80px;max-width:1000px;margin:auto;">
+
+<h2>User Management</h2>
+
+<table border="1" cellpadding="10" style="width:100%;text-align:left;border-collapse:collapse;">
+
+<tr>
+<th>ID</th>
+<th>Username</th>
+<th>Email</th>
+<th>Role</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+{% for user in users %}
+
+<tr>
+
+<td>{{ user.id }}</td>
+<td>{{ user.username }}</td>
+<td>{{ user.user_id }}</td>
+<td>{{ user.role }}</td>
+
+<td>
+{% if user.status == "blocked" %}
+<span style="color:red;font-weight:bold;">Blocked</span>
+{% else %}
+<span style="color:green;font-weight:bold;">Active</span>
+{% endif %}
+</td>
+
+<td>
+
+{% if user.role != "admin" %}
+
+    {% if user.status == "active" %}
+
+        <a href="/admin/block-user/{{ user.id }}" 
+           style="color:orange;text-decoration:none;font-weight:bold;">
+           Block
+        </a>
+
+    {% else %}
+
+        <a href="/admin/unblock-user/{{ user.id }}" 
+           style="color:green;text-decoration:none;font-weight:bold;">
+           Unblock
+        </a>
+
+    {% endif %}
+
+    |
+
+    <a href="/admin/delete-user/{{ user.id }}" 
+       onclick="return confirm('Delete this user?')"
+       style="color:red;text-decoration:none;font-weight:bold;">
+       Delete
+    </a>
+
+{% else %}
+
+    <span style="color:gray;font-weight:bold;">Admin</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>

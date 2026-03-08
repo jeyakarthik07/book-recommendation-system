@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div style="max-width:1000px; margin:auto; text-align:center;">
+<div style="max-width:500px; margin:auto; text-align:center;">
 
 <h1>-----MiniBooks-----</h1>
 
@@ -10,36 +10,31 @@
 
 <h3>Using different details</h3>
 
-<h5>(Don't use any symbol while searching)</h5>
-
 <hr>
-
 <form action="/recommend" method="post">
-
 <div>
 <label><b>Book Name</b></label><br>
-<input type="text" name="book_name" size="40">
+<input placeholder="Don't use any special characters" type="text" name="book_name" size="40">
 </div>
-
 <br>
 
 <div>
 <label><b>Author</b></label><br>
-<input type="text" name="author" size="40">
-</div>
-
-<br>
-
-<div>
-<label><b>ISBN / ISBN13</b></label><br>
-<input type="text" name="isbn" size="40">
+<input placeholder="Don't use any special characters" type="text" name="author" size="40">
 </div>
 
 <br>
 
 <div>
 <label><b>Publisher</b></label><br>
-<input type="text" name="publisher" size="40">
+<input placeholder="Don't use any special characters" type="text" name="publisher" size="40">
+</div>
+
+<br> 
+
+<div>
+<label><b>ISBN / ISBN13</b></label><br>
+<input type="text" name="isbn" size="40">
 </div>
 
 <br>

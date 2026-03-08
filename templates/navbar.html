@@ -1,35 +1,29 @@
 <div class="topbar">
 
-    <div class="left-section">
+<div class="left-section">
 
-        <span class="menu-icon" onclick="toggleSidebar()">☰</span>
+<span class="menu-icon" onclick="toggleSidebar()">☰</span>
 
-        <!-- WEBSITE TITLE (REFRESH BUTTON) -->
-        <a href="javascript:location.reload()" class="app-title">
-            Minibooks
-        </a>
+<a href="javascript:location.reload()" class="app-title">
+    <img src="{{ url_for('static', filename='images/library.png') }}" class="app-logo">
+Minibooks
+</a>
 
-        <!-- NAVIGATION ICONS (NOT ON HOME PAGE) -->
-        {% if request.path != "/" %}
+{% if request.path != "/" %}
 
-        <div class="nav-icons">
+<div class="nav-icons">
+<a href="javascript:history.back()" title="Back">⬅</a>
+<a href="/" title="Home">🏠</a>
+<a href="javascript:history.forward()" title="Forward">➡</a>
+</div>
 
-            <a href="javascript:history.back()" title="Back">⬅</a>
+{% endif %}
 
-            <a href="/" title="Home">🏠</a>
+</div>
 
-            <a href="javascript:history.forward()" title="Forward">➡</a>
-
-        </div>
-
-        {% endif %}
-
-    </div>
-
-
-    <div class="user-box">
-        Hello {{ username }}
-    </div>
+<div class="user-box">
+Hello {{ session.get("username") }}
+</div>
 
 </div>
 
@@ -39,67 +33,100 @@
 
 <div id="sidebar" class="sidebar">
 
-    <h2 class="menu-title">Menu</h2>
+<h2 class="menu-title">Menu</h2>
 
-    <a class="menu-item" href="/">🏠 Home</a>
+{% if session.get("role") == "guest" %}
 
-    <a class="menu-item" href="#" onclick="openSettings()">⚙ Settings</a>
+<a class="menu-item {% if request.path == '/' %}active{% endif %}" href="/">🏠 Home</a>
+<a class="menu-item" href="#" onclick="openSettings()">⚙ Settings</a>
+<a class="menu-item" href="/login">🔐 Login </a>
 
-    <a class="logout-btn" href="/logout">🚪 Logout</a>
+{% elif session.get("role") == "user" %}
+
+<a class="menu-item {% if request.path == '/' %}active{% endif %}" href="/">🏠 Home</a>
+<a class="menu-item" href="#" onclick="openSettings()">⚙ Settings</a>
+<a class="logout-btn" href="/logout">🚪 Logout</a>
+
+{% elif session.get("role") == "admin" %}
+
+<a class="menu-item {% if request.path == '/' %}active{% endif %}" href="/">🏠 Home</a>
+<a class="menu-item {% if request.path.startswith('/admin') and request.path == '/admin' %}active{% endif %}" href="/admin">📊 Dashboard</a>
+<a class="menu-item {% if request.path.startswith('/admin/users') %}active{% endif %}" href="/admin/users">👥 Users</a>
+<a class="menu-item {% if request.path.startswith('/admin/books') %}active{% endif %}" href="/admin/books">📚 Books</a>
+<a class="menu-item {% if request.path.startswith('/admin/analytics') %}active{% endif %}" href="/admin/analytics">📊 Analytics</a>
+<a class="menu-item" href="#" onclick="openSettings()">⚙ Settings</a>
+<a class="logout-btn" href="/logout">🚪 Logout</a>
+
+{% endif %}
 
 </div>
-
-
 
 <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
 
-<!-- SETTINGS POPUP -->
+<!-- SETTINGS MODAL -->
 
 <div id="settingsModal" class="settings-modal">
 
-    <div class="settings-box">
+<div class="settings-box">
 
-        <div class="settings-header">
-            <span>Settings</span>
-            <button class="close-btn" onclick="closeSettings()">✖</button>
-        </div>
-
-        <div class="setting-row">
-            <span>Dark Mode</span>
-            <label class="switch">
-                <input type="checkbox">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div class="setting-row">
-            <span>Notifications</span>
-            <label class="switch">
-                <input type="checkbox" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div class="setting-row">
-            <span>Sound</span>
-            <label class="switch">
-                <input type="checkbox" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-
-    </div>
-
+<div class="settings-header">
+<span>Settings</span>
+<button class="close-btn" onclick="closeSettings()">✖</button>
 </div>
 
+<div class="setting-row">
+<span>Dark Mode</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="setting-row">
+<span>Notifications</span>
+<label class="switch">
+<input type="checkbox" checked>
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="setting-row">
+<span>Sound</span>
+<label class="switch">
+<input type="checkbox" checked>
+<span class="slider"></span>
+</label>
+</div>
+</div>
+</div>
 <style>
 
 body{
 margin:0;
 font-family:Segoe UI, Arial;
+overflow-y:auto;
 }
 
-/* TOP BAR */
+.app-logo{
+height:20px;
+width:18px;
+}
+
+.logo-container{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logo-img{
+height:32px;
+width:32px;
+}
+
+.logo-text{
+font-size:20px;
+font-weight:bold;
+}
 
 .topbar{
 height:60px;
@@ -115,14 +142,10 @@ z-index:2000;
 box-shadow:0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* LEFT SECTION */
-
 .left-section{
 display:flex;
 align-items:center;
 }
-
-/* MENU ICON */
 
 .menu-icon{
 font-size:26px;
@@ -130,7 +153,16 @@ cursor:pointer;
 margin-right:15px;
 }
 
-/* TITLE */
+.menu-item.active{
+    background-color:#3c6e8f;
+    border-left:4px solid #4dd0e1;
+    font-weight:bold;
+}
+
+.menu-item:hover{
+    background:#2e4f64;
+    transition:0.2s;
+}
 
 .app-title{
 font-size:22px;
@@ -140,8 +172,6 @@ text-decoration:none;
 margin-right:25px;
 }
 
-/* NAV ICONS */
-
 .nav-icons a{
 color:white;
 font-size:20px;
@@ -149,16 +179,12 @@ margin-right:18px;
 text-decoration:none;
 }
 
-/* USERNAME */
-
 .user-box{
 margin-left:auto;
 margin-right:30px;
 font-size:16px;
 font-weight:500;
 }
-
-/* SIDEBAR */
 
 .sidebar{
 position:fixed;
@@ -207,8 +233,6 @@ font-weight:bold;
 background:#c1121f;
 }
 
-/* OVERLAY */
-
 .overlay{
 position:fixed;
 top:60px;
@@ -219,8 +243,6 @@ background:rgba(0,0,0,0.3);
 display:none;
 z-index:2050;
 }
-
-/* SETTINGS MODAL */
 
 .settings-modal{
 position:fixed;
@@ -267,9 +289,6 @@ align-items:center;
 margin:15px 0;
 }
 
-
-/* TOGGLE SWITCH */
-
 .switch{
 position:relative;
 display:inline-block;
@@ -311,42 +330,33 @@ background:#4fa3d1;
 input:checked + .slider:before{
 transform:translateX(20px);
 }
+
 </style>
 
 
 
 <script>
-    
+
 function openSettings(){
-
 document.getElementById("settingsModal").style.display="flex"
-
 }
 
 function closeSettings(){
-
 document.getElementById("settingsModal").style.display="none"
-
 }
 
 function toggleSidebar(){
-
-const sidebar = document.getElementById("sidebar")
-const overlay = document.getElementById("overlay")
-
-sidebar.style.left = "0px"
-overlay.style.display = "block"
-
+const sidebar=document.getElementById("sidebar")
+const overlay=document.getElementById("overlay")
+sidebar.style.left="0px"
+overlay.style.display="block"
 }
 
 function closeSidebar(){
-
-const sidebar = document.getElementById("sidebar")
-const overlay = document.getElementById("overlay")
-
-sidebar.style.left = "-240px"
-overlay.style.display = "none"
-
+const sidebar=document.getElementById("sidebar")
+const overlay=document.getElementById("overlay")
+sidebar.style.left="-240px"
+overlay.style.display="none"
 }
 
 </script>

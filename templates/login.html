@@ -1,122 +1,92 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login | MiniBooks</title>
+<title>Login | MiniBooks</title>
 
-    <style>
-        body {
-            font-family: Arial;
-            background: #f2f2f2;
-            text-align: center;
-        }
+<style>
 
-        h1 {
-            margin-top: 40px;
-        }
+body{
+    font-family:Arial;
+    background:#f2f2f2;
+    text-align:center;
+}
 
-        .container {
-            width: 550px;              /* Bigger box */
-            margin: 70px auto;
-            background: #dcdcdc;
-            padding: 40px;
-            border-radius: 25px;
-        }
+h1{
+    margin-top:40px;
+}
 
-        .tabs {
-            margin-bottom: 25px;
-        }
+.container{
+    width:550px;
+    margin:70px auto;
+    background:#dcdcdc;
+    padding:40px;
+    border-radius:25px;
+}
 
-        .tabs button {
-            width: 48%;
-            padding: 12px;
-            border: none;
-            background: #bbb;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 15px;
-        }
+.section-title{
+    font-size:22px;
+    margin-bottom:25px;
+    font-weight:bold;
+}
 
-        .tabs button.active {
-            background: #888;
-            color: white;
-        }
+.form-group{
+    text-align:left;
+    margin-bottom:15px;
+}
 
-        .form-group {
-            text-align: left;
-            margin-bottom: 15px;
-        }
+label{
+    font-weight:bold;
+}
 
-        label {
-            font-weight: bold;
-        }
+input{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    font-size:15px;
+}
 
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            font-size: 15px;
-        }
+button.main-btn{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:15px;
+}
 
-        button.main-btn {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 15px;
-        }
+.link-btn{
+    cursor:pointer;
+    color:blue;
+    text-decoration:underline;
+    margin-top:15px;
+    display:inline-block;
+}
 
-        .hidden {
-            display: none;
-        }
+.error{
+    color:red;
+    margin-top:15px;
+}
 
-        .error {
-            color: red;
-            margin-top: 15px;
-        }
+.hidden{
+    display:none;
+}
 
-        .link-btn {
-            cursor: pointer;
-            color: blue;
-            text-decoration: underline;
-            margin-top: 15px;
-            display: inline-block;
-        }
+</style>
 
-        .section-title {
-            font-size: 20px;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
+<script>
 
-    </style>
+function showRegister(){
+    document.getElementById("loginForm").classList.add("hidden")
+    document.getElementById("registerForm").classList.remove("hidden")
+}
 
-    <script>
-        function activateTab(tab) {
-            document.getElementById("userLogin").classList.add("hidden");
-            document.getElementById("adminLogin").classList.add("hidden");
-            document.getElementById("registerForm").classList.add("hidden");
+function showLogin(){
+    document.getElementById("registerForm").classList.add("hidden")
+    document.getElementById("loginForm").classList.remove("hidden")
+}
 
-            document.getElementById("btnUser").classList.remove("active");
-            document.getElementById("btnAdmin").classList.remove("active");
+</script>
 
-            if (tab === "user") {
-                document.getElementById("userLogin").classList.remove("hidden");
-                document.getElementById("btnUser").classList.add("active");
-            }
-            else if (tab === "admin") {
-                document.getElementById("adminLogin").classList.remove("hidden");
-                document.getElementById("btnAdmin").classList.add("active");
-            }
-            else if (tab === "register") {
-                document.getElementById("registerForm").classList.remove("hidden");
-            }
-        }
-
-        window.onload = function() {
-            activateTab("user");
-        };
-    </script>
 </head>
 
 <body>
@@ -125,104 +95,97 @@
 
 <div class="container">
 
-    <div class="tabs">
-        <button id="btnUser" onclick="activateTab('user')">User ID Login</button>
-        <button id="btnAdmin" onclick="activateTab('admin')">Admin Login</button>
-    </div>
+<!-- ================= LOGIN ================= -->
 
-    <!-- ================= USER LOGIN ================= -->
-    <div id="userLogin">
+<div id="loginForm">
 
-        <div class="section-title">User Login</div>
+<div class="section-title">User Login</div>
 
-        <form method="POST" action="/login">
+<form method="POST" action="/login">
 
-            <div class="form-group">
-                <label>Email :</label>
-                <input type="email" name="user_id" required>
-            </div>
+<div class="form-group">
+<label>Email :</label>
+<input type="email" name="user_id">
+</div>
 
-            <div class="form-group">
-                <label>Password :</label>
-                <input type="password" name="password" required>
-            </div>
+<div class="form-group">
+<label>Password :</label>
+<input type="password" name="password">
+</div>
 
-            <button class="main-btn">LOGIN</button>
-        </form>
+<button class="main-btn">LOGIN</button>
 
-        <div class="link-btn" onclick="activateTab('register')">
-            Create Account
-        </div>
+</form>
 
-    </div>
+<br>
 
-    <!-- ================= ADMIN LOGIN ================= -->
-    <div id="adminLogin" class="hidden">
+<a href="/guest-login">
+<button type="button" class="main-btn">Continue as Guest</button>
+</a>
 
-        <div class="section-title">Admin Login</div>
+<div class="link-btn" onclick="showRegister()">
+Create Account
+</div>
 
-        <div class="form-group">
-            <label>Email :</label>
-            <input type="email">
-        </div>
+</div>
 
-        <div class="form-group">
-            <label>Password :</label>
-            <input type="password">
-        </div>
 
-        <button class="main-btn">LOGIN</button>
+<!-- ================= REGISTER ================= -->
 
-        <p><i>Admin functionality coming soon</i></p>
+<div id="registerForm" class="hidden">
 
-    </div>
+<div class="section-title">Create a New Account</div>
 
-    <!-- ================= REGISTER ================= -->
-    <div id="registerForm" class="hidden">
+<form method="POST" action="/register">
 
-        <div class="section-title">Create a New Account</div>
+<div class="form-group">
+<label>Email :</label>
+<input type="email" name="user_id" required>
+</div>
 
-        <form method="POST" action="/register">
+<div class="form-group">
+<label>User Name :</label>
+<input type="text" name="username" required>
+</div>
 
-            <div class="form-group">
-                <label>Email :</label>
-                <input type="email" name="user_id" required>
-            </div>
+<div class="form-group">
+<label>Password :</label>
+<input type="password" name="password" required>
+</div>
 
-            <div class="form-group">
-                <label>User Name :</label>
-                <input type="text" name="username" required>
-            </div>
+<div class="form-group">
+<label>Confirm Password :</label>
+<input type="password" name="confirm" required>
+</div>
 
-            <div class="form-group">
-                <label>Password :</label>
-                <input type="password" name="password" required>
-            </div>
+<button class="main-btn">Create Account</button>
 
-            <div class="form-group">
-                <label>Confirm Password :</label>
-                <input type="password" name="confirm" required>
-            </div>
+</form>
 
-            <button class="main-btn">Create Account</button>
-        </form>
+<div class="link-btn" onclick="showLogin()">
+Back to Login 🔙
+</div>
 
-        <div class="link-btn" onclick="activateTab('user')">
-            Back to Login🔙
-        </div>
+</div>
 
-    </div>
 
-    <!-- FLASH MESSAGES -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="error">
-            {% for msg in messages %}
-                <p>{{ msg }}</p>
-            {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
+<!-- FLASH MESSAGES -->
+
+{% with messages = get_flashed_messages() %}
+
+{% if messages %}
+
+<div class="error">
+
+{% for msg in messages %}
+<p>{{ msg }}</p>
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+{% endwith %}
 
 </div>
 

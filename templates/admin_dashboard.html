@@ -1,0 +1,37 @@
+{% include "navbar.html" %}
+
+<div style="margin-top:90px; padding:20px; max-width:900px; margin-left:auto; margin-right:auto;">
+
+<h1>Admin Dashboard</h1>
+
+<hr>
+
+<h2>Statistics</h2>
+
+<p><b>Total Users:</b> {{ total_users }}</p>
+
+<p><b>Total Books:</b> {{ total_books }}</p>
+
+<hr>
+
+<h2>Recent Users</h2>
+
+<table border="1" cellpadding="10">
+
+<tr>
+<th>Username</th>
+<th>Email</th>
+</tr>
+
+{% for user in recent_users %}
+
+<tr>
+<td>{{ user.username }}</td>
+<td>{{ user.user_id }}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>

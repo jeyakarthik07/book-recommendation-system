@@ -1,0 +1,32 @@
+{% include "navbar.html" %}
+<center>
+<div style="margin-top:120px;padding:60px;max-width:900px;margin:auto;">
+
+<h2 style="text-align:center;">📊 System Analytics</h2>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:40px;">
+
+<div style="padding:25px;background:#f3f3f3;border-radius:10px;text-align:center;">
+<h3>Total Users</h3>
+<h1>{{ total_users }}</h1>
+</div>
+
+<div style="padding:25px;background:#f3f3f3;border-radius:10px;text-align:center;">
+<h3>Dataset Books</h3>
+<h1>{{ total_dataset_books }}</h1>
+</div>
+
+<div style="padding:25px;background:#f3f3f3;border-radius:10px;text-align:center;">
+<h3>Admin Added Books</h3>
+<h1>{{ total_admin_books }}</h1>
+</div>
+
+<div style="padding:25px;background:#f3f3f3;border-radius:10px;text-align:center;">
+<h3>Most Popular Genre</h3>
+<h1>{{ top_genre }}</h1>
+</div>
+
+</div>
+
+</div>
+</center>
