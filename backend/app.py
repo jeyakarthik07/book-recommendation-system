@@ -84,31 +84,32 @@ def book_detail(isbn):
     conn = get_db_connection()
 
     admin_book = conn.execute(
-        "SELECT * FROM admin_books WHERE isbn=?",
-        (isbn,)
-    ).fetchone()
+        "SELECT * FROM admin_books"
+    ).fetchall()
 
     conn.close()
 
-    if admin_book:
+    for b in admin_book:
 
-        book_data = {
-            "title": admin_book["title"],
-            "authors": admin_book["authors"],
-            "publisher": admin_book["publisher"],
-            "genre": admin_book["genre"],
-            "mood": admin_book["mood"],
-            "isbn": admin_book["isbn"],
-            "num_pages": admin_book["num_pages"],
-            "description": admin_book["description"],
-            "average_rating": admin_book["average_rating"]
-        }
+        if str(b["isbn"]).strip() == isbn:
 
-        return render_template(
-            "book_detail.html",
-            book=book_data,
-            ml_results=None
-        )
+            book_data = {
+                "title": b["title"],
+                "authors": b["authors"],
+                "publisher": b["publisher"],
+                "genre": b["genre"],
+                "mood": b["mood"],
+                "isbn": b["isbn"],
+                "num_pages": b["num_pages"],
+                "description": b["description"],
+                "average_rating": b["average_rating"]
+            }
+
+            return render_template(
+                "book_detail.html",
+                book=book_data,
+                ml_results=None
+            )
 
     # -----------------------------
     # 3️⃣ BOOK NOT FOUND

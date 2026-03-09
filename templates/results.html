@@ -92,7 +92,7 @@
     {% for _, row in results.iterrows() %}
     <tr class="result-row">
         <td class="col-title">
-            <a href="/book/{{ row.isbn }}">{{ row.title }}</a>
+            <a href="/book/{{ row['isbn'] }}">{{ row['title'] }}</a>
         </td>
         <td class="col-author">{{ row.authors }}</td>
         <td class="col-genre">{{ row.genre }}</td>
@@ -132,7 +132,7 @@
     {% for _, row in ml_results.iterrows() %}
     <tr>
         <td class="col-title">
-            <a href="/book/{{ row.isbn }}">{{ row.title }}</a>
+            <a href="/book/{{ row['isbn'] }}">{{ row['title'] }}</a>
         </td>
         <td class="col-author">{{ row.authors }}</td>
         <td class="col-genre">{{ row.genre }}</td>
