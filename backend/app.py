@@ -58,42 +58,15 @@ def book_detail(isbn):
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    # ---- CHECK DATASET BOOKS ----
+    isbn = str(isbn).strip()
+
+    # -----------------------------
+    # 1️⃣ CHECK DATASET
+    # -----------------------------
     data = df.copy()
     data["isbn"] = data["isbn"].astype(str).str.strip()
 
     book = data[data["isbn"] == isbn]
-
-    if book.empty:
-
-        conn = get_db_connection()
-
-        admin_book = conn.execute(
-            "SELECT * FROM admin_books WHERE isbn=?",
-            (isbn,)
-        ).fetchone()
-
-        conn.close()
-
-        if admin_book:
-
-            book_data = {
-                "title": admin_book["title"],
-                "authors": admin_book["authors"],
-                "publisher": admin_book["publisher"],
-                "genre": admin_book["genre"],
-                "mood": admin_book["mood"],
-                "isbn": admin_book["isbn"],
-                "pages": admin_book["num_pages"],
-                "description": admin_book["description"],
-                "average_rating": admin_book["average_rating"]
-            }
-
-            return render_template(
-                "book_detail.html",
-                book=book_data,
-                ml_results=None
-            )
 
     if not book.empty:
 
@@ -105,11 +78,13 @@ def book_detail(isbn):
             ml_results=ml_results
         )
 
-    # ---- CHECK ADMIN BOOKS ----
+    # -----------------------------
+    # 2️⃣ CHECK ADMIN BOOKS
+    # -----------------------------
     conn = get_db_connection()
 
     admin_book = conn.execute(
-        "SELECT * FROM admin_books WHERE isbn = ?",
+        "SELECT * FROM admin_books WHERE isbn=?",
         (isbn,)
     ).fetchone()
 
@@ -124,19 +99,20 @@ def book_detail(isbn):
             "genre": admin_book["genre"],
             "mood": admin_book["mood"],
             "isbn": admin_book["isbn"],
-            "pages": admin_book["num_pages"], 
+            "num_pages": admin_book["num_pages"],
             "description": admin_book["description"],
             "average_rating": admin_book["average_rating"]
         }
 
-        ml_results = recommend_similar_books(admin_book["title"], top_n=5)
-
         return render_template(
             "book_detail.html",
             book=book_data,
-            ml_results=ml_results
+            ml_results=None
         )
 
+    # -----------------------------
+    # 3️⃣ BOOK NOT FOUND
+    # -----------------------------
     return render_template(
         "book_detail.html",
         book=None,
@@ -403,7 +379,7 @@ def register():
 
         conn.execute(
             "INSERT INTO users (user_id, username, password_hash, role) VALUES (?, ?, ?, ?)",
-            (user_id, username, password_hash, "admin")
+            (user_id, username, password_hash, "user")
         )
 
         conn.commit()
