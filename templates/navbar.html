@@ -12,9 +12,9 @@ Minibooks
 {% if request.path != "/" %}
 
 <div class="nav-icons">
-<a href="javascript:history.back()" title="Back">⬅</a>
-<a href="/" title="Home">🏠</a>
-<a href="javascript:history.forward()" title="Forward">➡</a>
+<a href="javascript:history.back()" title="Back">↶</a>
+<a href="/" title="Home">⌂</a>
+<a href="javascript:history.forward()" title="Forward">↷</a>
 </div>
 
 {% endif %}
@@ -40,6 +40,7 @@ Hello {{ session.get("username") }}
 <a class="menu-item {% if request.path == '/' %}active{% endif %}" href="/">🏠 Home</a>
 <a class="menu-item" href="#" onclick="openSettings()">⚙ Settings</a>
 <a class="menu-item" href="/login">🔐 Login </a>
+<a class="logout-btn" href="/logout">🚪 Logout</a>
 
 {% elif session.get("role") == "user" %}
 
@@ -100,157 +101,180 @@ Hello {{ session.get("username") }}
 </div>
 </div>
 <style>
-
 body{
 margin:0;
-font-family:Segoe UI, Arial;
+font-family:'Segoe UI', Arial, sans-serif;
 overflow-y:auto;
 }
 
+/* LOGO */
 .app-logo{
-height:20px;
-width:18px;
+height:22px;
+width:20px;
+margin-right:8px;
 }
 
-.logo-container{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.logo-img{
-height:32px;
-width:32px;
-}
-
-.logo-text{
-font-size:20px;
-font-weight:bold;
-}
-
+/* TOPBAR */
 .topbar{
 height:60px;
-background:#4fa3d1;
+background: linear-gradient(135deg, #1e293b, #334155);
 color:white;
 display:flex;
 align-items:center;
-padding:0 20px;
+padding:0 25px;
 position:fixed;
 width:100%;
 top:0;
 z-index:2000;
-box-shadow:0 2px 6px rgba(0,0,0,0.2);
+box-shadow:0 4px 12px rgba(0,0,0,0.3);
 }
 
+/* LEFT SECTION */
 .left-section{
 display:flex;
 align-items:center;
 }
 
+/* MENU ICON */
 .menu-icon{
-font-size:26px;
+font-size:24px;
 cursor:pointer;
 margin-right:15px;
+transition:0.3s;
 }
 
-.menu-item.active{
-    background-color:#3c6e8f;
-    border-left:4px solid #4dd0e1;
-    font-weight:bold;
+.menu-icon:hover{
+transform:scale(1.1);
+color:#4dd0e1;
 }
 
-.menu-item:hover{
-    background:#2e4f64;
-    transition:0.2s;
-}
-
+/* APP TITLE */
 .app-title{
 font-size:22px;
-font-weight:bold;
+font-weight:600;
 color:white;
 text-decoration:none;
-margin-right:25px;
+margin-right:30px;
+display:flex;
+align-items:center;
+letter-spacing:1px;
 }
 
+.app-title:hover{
+color:#4dd0e1;
+}
+
+/* NAV ICONS */
 .nav-icons a{
-color:white;
-font-size:20px;
+font-size:18px;
 margin-right:18px;
 text-decoration:none;
+color:#cbd5f5;
+transition:0.3s;
+padding:6px 8px;
+border-radius:6px;
 }
 
+/* ICON HOVER */
+.nav-icons a:hover{
+background:rgba(255,255,255,0.1);
+color:#4dd0e1;
+}
+
+/* USER */
 .user-box{
 margin-left:auto;
 margin-right:30px;
-font-size:16px;
+font-size:15px;
 font-weight:500;
+color:#e2e8f0;
 }
 
+/* SIDEBAR */
 .sidebar{
 position:fixed;
 left:-240px;
 top:60px;
 width:240px;
 height:100%;
-background:#1f2933;
+background: linear-gradient(180deg, #111827, #1f2937);
 color:white;
 transition:0.3s;
 z-index:2100;
 padding-top:20px;
+box-shadow:4px 0 12px rgba(0,0,0,0.3);
 }
 
+/* MENU TITLE */
 .menu-title{
 padding-left:20px;
-font-size:20px;
+font-size:18px;
 margin-bottom:20px;
+color:#9ca3af;
 }
 
+/* MENU ITEMS */
 .menu-item{
 display:block;
 padding:14px 20px;
-color:white;
+color:#e5e7eb;
 text-decoration:none;
-font-size:16px;
+font-size:15px;
+transition:0.2s;
+border-left:3px solid transparent;
 }
 
+/* ACTIVE */
+.menu-item.active{
+background:#1e3a5f;
+border-left:4px solid #4dd0e1;
+font-weight:bold;
+}
+
+/* HOVER */
 .menu-item:hover{
-background:#374151;
+background:#243447;
+padding-left:25px;
 }
 
+/* LOGOUT */
 .logout-btn{
 display:block;
 margin:30px 20px;
 padding:12px;
 text-align:center;
-background:#e63946;
-border-radius:6px;
+background:#ef4444;
+border-radius:8px;
 color:white;
 text-decoration:none;
 font-weight:bold;
+transition:0.3s;
 }
 
 .logout-btn:hover{
-background:#c1121f;
+background:#dc2626;
 }
 
+/* OVERLAY */
 .overlay{
 position:fixed;
 top:60px;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.3);
+background:rgba(0,0,0,0.4);
 display:none;
 z-index:2050;
 }
 
+/* SETTINGS MODAL */
 .settings-modal{
 position:fixed;
 top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.4);
+background:rgba(0,0,0,0.5);
 display:none;
 align-items:center;
 justify-content:center;
@@ -259,21 +283,23 @@ z-index:3000;
 
 .settings-box{
 width:350px;
-background:#1f2933;
+background:#1f2937;
 color:white;
 border-radius:12px;
 padding:20px;
 box-shadow:0 10px 25px rgba(0,0,0,0.5);
 }
 
+/* HEADER */
 .settings-header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-font-size:20px;
+font-size:18px;
 margin-bottom:20px;
 }
 
+/* CLOSE BTN */
 .close-btn{
 background:none;
 border:none;
@@ -282,6 +308,7 @@ font-size:18px;
 cursor:pointer;
 }
 
+/* SETTINGS ROW */
 .setting-row{
 display:flex;
 justify-content:space-between;
@@ -289,6 +316,7 @@ align-items:center;
 margin:15px 0;
 }
 
+/* SWITCH */
 .switch{
 position:relative;
 display:inline-block;
@@ -307,7 +335,7 @@ top:0;
 left:0;
 right:0;
 bottom:0;
-background:#ccc;
+background:#555;
 border-radius:20px;
 }
 
@@ -324,7 +352,7 @@ transition:.3s;
 }
 
 input:checked + .slider{
-background:#4fa3d1;
+background:#4dd0e1;
 }
 
 input:checked + .slider:before{
@@ -332,9 +360,6 @@ transform:translateX(20px);
 }
 
 </style>
-
-
-
 <script>
 
 function openSettings(){

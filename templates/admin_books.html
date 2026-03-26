@@ -1,20 +1,172 @@
 {% include "navbar.html" %}
 
-<div style="margin-top:190px;padding:80px;max-width:1000px;margin:auto;">
+<style>
 
-<h2>Book Management</h2>
+/* BACKGROUND */
+body{
+    font-family:Arial;
+
+    background-image: url("{{ url_for('static', filename='images/shelf.jpg') }}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* OVERLAY */
+body::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.6);
+    z-index:-1;
+}
+
+/* MAIN CONTAINER */
+.container{
+    margin-top:120px;
+    padding:30px;
+    max-width:1000px;
+    margin-left:auto;
+    margin-right:auto;
+
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    color:white;
+}
+
+/* TITLE */
+h2{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+/* TOP BUTTONS */
+.panel{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.panel button{
+    padding:10px 20px;
+    border:none;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+
+    background: rgba(255,255,255,0.3);
+    color:white;
+}
+
+.panel button:hover{
+    background: rgba(255,255,255,0.6);
+}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0 10px;
+}
+
+th{
+    background: rgba(255,255,255,0.2);
+    padding:10px;
+    border-radius:8px;
+}
+
+td{
+    background: rgba(255,255,255,0.1);
+    padding:12px;
+}
+
+tr:hover td{
+    background: rgba(255,255,255,0.25);
+}
+
+/* LINKS */
+a{
+    color:#4dd0e1;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+
+/* ACTION BUTTONS */
+.action-btn{
+    padding:5px 10px;
+    border-radius:6px;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.edit-btn{
+    background:#facc15;
+    color:black;
+}
+
+.delete-btn{
+    background:#ef4444;
+    color:white;
+}
+
+/* FORM */
+form{
+    max-width:600px;
+    margin:auto;
+    text-align:left;
+}
+
+/* INPUTS */
+input, select, textarea{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border:none;
+    border-radius:8px;
+}
+
+/* FORM BUTTON */
+form button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+
+    background: rgba(255,255,255,0.3);
+    color:white;
+}
+
+form button:hover{
+    background: rgba(255,255,255,0.6);
+}
+
+</style>
+
+<div class="container">
+
+<h2>📚 Book Management</h2>
 
 <!-- PANEL -->
+<div class="panel">
 
-<div style="display:flex;gap:10px;margin-bottom:20px;">
+<button onclick="showNewBooks()">📖 New Books</button>
 
-<button onclick="showNewBooks()" style="padding:8px 18px;font-weight:bold;">
-New Books
-</button>
-
-<button onclick="showAddBook()" style="padding:18px 28px;font-weight:bold;">
-Add New Book
-</button>
+<button onclick="showAddBook()">➕ Add New Book</button>
 
 </div>
 
@@ -22,7 +174,7 @@ Add New Book
 
 <div id="newBooksSection">
 
-<table border="1" cellpadding="10" style="width:100%;text-align:left;border-collapse:collapse;">
+<table>
 
 <tr>
 <th>Book</th>
@@ -35,14 +187,15 @@ Add New Book
 <tr>
 
 <td>
-<a href="/book/{{ book.isbn }}" style="text-decoration:none;font-weight:bold;">
+<a href="/book/{{ book.isbn }}">
 {{ book.title }}
 </a>
 </td>
 
 <td>
 <a href="/admin/delete-book/{{ book.id }}"
-onclick="return confirm('Delete this book and re-add with changes?')">
+onclick="return confirm('Delete this book and re-add with changes?')"
+class="action-btn edit-btn">
 Edit
 </a>
 </td>
@@ -50,7 +203,7 @@ Edit
 <td>
 <a href="/admin/delete-book/{{ book.id }}"
 onclick="return confirm('Delete this book?')"
-style="color:red;">
+class="action-btn delete-btn">
 Delete
 </a>
 </td>
@@ -64,71 +217,71 @@ Delete
 </div>
 
 <!-- ================= ADD BOOK FORM ================= -->
-<center>
+
 <div id="addBookSection" style="display:none;">
 
 <form method="POST" action="/admin/add-book">
 
-<div style="margin-bottom:10px;">
+<div>
 Title* <br>
-<input type="text" name="title" required style="width:100%;">
+<input type="text" name="title" required>
 </div>
 
-<div style="margin-bottom:10px;">
+<div>
 Author* <br>
-<input type="text" name="authors" required style="width:100%;">
+<input type="text" name="authors" required>
 </div>
 
-<div style="margin-bottom:10px;">
+<div>
 Publisher* <br>
-<input type="text" name="publisher" required style="width:100%;">
+<input type="text" name="publisher" required>
 </div>
 
-<div style="margin-bottom:10px;">
+<div>
 Age Group <br>
-<input type="text" name="agegroup" style="width:100%;">
+<input type="text" name="agegroup">
 </div>
 
-<div style="margin-bottom:10px;">
+<div>
 Language* <br>
-<input type="text" name="language" required style="width:100%;">
+<input type="text" name="language" required>
 </div>
 
-<div style="margin-bottom:10px;">
+<div>
 Popularity* <br>
-<input type="number" name="popularity" required style="width:100%;">
+<input type="number" name="popularity" required>
 </div>
 
-<div style="margin-bottom:10px;">
+<div>
 Genre* <br>
-<input type="text" name="genre" required style="width:100%;">
+<input type="text" name="genre" required>
 </div>
 
-<div style="margin-bottom:10px;">
+<div>
 Mood* <br>
-<select name="mood" style="width:100%;">
+<select name="mood">
 {% for m in moods %}
 <option value="{{ m }}">{{ m }}</option>
 {% endfor %}
 </select>
 </div>
 
-<div style="margin-bottom:10px;">
+<div>
 Pages <br>
-<input type="number" name="pages" style="width:100%;">
+<input type="number" name="pages">
 </div>
 
-<div style="margin-bottom:10px;">
+<div>
 ISBN* <br>
-<input type="text" name="isbn" required style="width:100%;">
+<input type="text" name="isbn" required>
 </div>
 
-<div style="margin-bottom:10px;">
+<div>
 Description <br>
-<textarea name="description" rows="4" style="width:100%;"></textarea>
+<textarea name="description" rows="4"></textarea>
 </div>
 
-<button type="submit" style="padding:20px 20px;font-weight:bold;">
+<button type="submit">
 Add Book
 </button>
 
@@ -137,7 +290,7 @@ Add Book
 </div>
 
 </div>
-</center>
+
 <script>
 
 function showAddBook(){

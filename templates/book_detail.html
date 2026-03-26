@@ -2,38 +2,197 @@
 <html>
 <head>
     <title>📚Book Details</title>
+
+<style>
+
+/* BACKGROUND (USE YOUR IMAGE HERE) */
+body{
+    font-family:Arial;
+    text-align:center;
+
+    background-image: url("{{ url_for('static', filename='images/read!.jpg') }}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* OVERLAY */
+body::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.6);
+    z-index:-1;
+}
+
+/* MAIN CONTAINER */
+.container{
+    max-width:900px;
+    margin:80px auto;
+    padding:30px;
+    border-radius:20px;
+
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    color:white;
+}
+
+/* BOOK TITLE (HIGHLIGHTED) */
+.book-title{
+    font-size:32px;
+    font-weight:bold;
+    color:#f6f608;
+    letter-spacing:1px;
+    margin-bottom:10px;
+    font-family:'Times New Roman', Times, serif;
+}
+
+/* DETAILS */
+.book-details{
+    text-align:left;
+    margin-top:20px;
+    line-height:1.8;
+}
+
+.book-details b{
+    color:#cbd5f5;
+}
+
+/* DESCRIPTION */
+.description{
+    margin-top:20px;
+    padding:15px;
+    background: rgba(255,255,255,0.1);
+    border-radius:10px;
+}
+
+/* TABLE (SAME STYLE AS RESULT PAGE) */
+table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0 10px;
+    margin-top:20px;
+}
+
+th{
+    background: rgba(255,255,255,0.2);
+    padding:10px;
+    border-radius:8px;
+}
+
+td{
+    background: rgba(255,255,255,0.1);
+    padding:12px;
+    border:none;
+}
+
+tr:hover td{
+    background: rgba(255,255,255,0.25);
+}
+
+/* LINKS */
+a{
+    color:#dce70f;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+
+/* MESSAGE */
+p{
+    color:#e2e8f0;
+}
+
+/* Buttons */
+button.main-btn{
+    padding:12px;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:15px;
+    border:none;
+    border-radius:10px;
+    transition:0.3s;
+
+    background: rgba(255,255,255,0.3);
+    color:white;
+    backdrop-filter: blur(5px);
+}
+
+/* Hover */
+button.main-btn:hover{
+    background: rgba(255,255,255,0.6);
+    transform:scale(1.05);
+}
+
+</style>
+
 </head>
+
 {% extends "base.html" %}
 
 {% block content %}
 <body>
 
-<!-- TOP NAV -->
-
-
-<div style="max-width:900px; margin:auto;">
+<div class="container">
 
 {% if book is not none %}
-<center>
-<h1>{{ book.title }}</h1>
 
+<!-- TITLE -->
+<div class="book-title">
+📖 {{ book.title }}
+</div>
+
+<!-- DETAILS -->
+<div class="book-details">
+<center>
 <p><b>Author:</b> {{ book.authors }}</p>
 <p><b>Publisher:</b> {{ book.publisher }}</p>
 <p><b>Genre:</b> {{ book.genre }}</p>
 <p><b>Mood:</b> {{ book.mood }}</p>
 <p><b>ISBN:</b> {{ book.isbn }}</p>
 <p><b>Pages:</b> {{ book.pages }}</p>
-<p><b>Rating:</b> {{ book.average_rating }}</p>
+<p><b>Rating:</b> ⭐ {{ book.average_rating }}</p>
 
+<a href="https://www.amazon.in/s?k={{ book.title }} {{ book.isbn }}" target="_blank">
+<button type="button" class="main-btn">🛒 Buy on Amazon</button>
+</a>
+
+<a href="https://www.flipkart.com/search?q={{ book.title }} {{ book.isbn }}" target="_blank">
+<button type="button" class="main-btn">📦 Buy on Flipkart</button>
+</a>
+
+<a href="https://books.google.com/books?vid=ISBN{{ book.isbn }}" target="_blank">
+<button type="button" class="main-btn">📖 View on Google Books</button>
+</a>
+
+</center>
+
+</div>
+
+<!-- DESCRIPTION -->
+<div class="description">
 <h3>Description</h3>
 <p>{{ book.description }}</p>
-</center>
+</div>
+
 <hr>
+
 <center>
-<h2>Similar Books Based on your Search💖.</h2>
+<h2>💡 Similar Books You May Like</h2>
 </center>
+
 {% if ml_results is not none and ml_results|length > 0 %}
-<table border="1" width="100%">
+
+<table>
     <tr>
         <th>Title</th>
         <th>Author</th>
@@ -54,15 +213,16 @@
     </tr>
     {% endfor %}
 </table>
+
 {% else %}
 <center>
-<p>🤔Thinking What you may like!.</p>
+<p>🤔 Thinking what you may like...</p>
 </center>
 {% endif %}
 
 {% else %}
 <center>
-<h3>Sorry😕, I think there is no match for your search. Try searching using other details😊.</h3>
+<h3>😕 No book found. Try another search.</h3>
 </center>
 {% endif %}
 

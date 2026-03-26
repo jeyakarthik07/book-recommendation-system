@@ -4,66 +4,125 @@
     <title>Recommendations</title>
 
     <style>
-        /* ---------- TOP NAV ---------- */
-        .top-nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: #f2f2f2;
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-            z-index: 1000;
-        }
+        body{
+    font-family:Arial;
+    text-align:center;
 
-        /* ---------- PAGE CONTAINER ---------- */
-        .container {
-            max-width: 1100px;
-            margin: 80px auto 40px auto;
-        }
+    background-image: url("{{ url_for('static', filename='images/download.jpg') }}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+     background-attachment: fixed;
+}
 
-        /* ---------- TABLE ---------- */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed; /* 🔑 FIX COLUMN WIDTH */
-        }
+body::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.6);
+    z-index:-1;
+}
 
-        th, td {
-            border: 1px solid #333;
-            padding: 8px;
-            word-wrap: break-word;   /* 🔑 WRAP LONG TEXT */
-            white-space: normal;
-        }
+/* MAIN CONTAINER */
+.container{
+    max-width:1100px;
+    margin:80px auto 40px auto;
+    padding:30px;
+    border-radius:20px;
 
-        th {
-            background: #f9f9f9;
-            text-align: center;
-        }
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
 
-        /* Column widths */
-        .col-title { width: 40%; }
-        .col-author { width: 18%; }
-        .col-genre { width: 15%; }
-        .col-mood { width: 10%; }
-        .col-age { width: 8%; }
-        .col-pop { width: 9%; }
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    color:white;
+}
 
-        /* ---------- PAGINATION ---------- */
-        .pagination {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            margin: 20px 0;
-            gap: 12px;
-            font-size: 18px;
-        }
+/* HEADINGS */
+h2{
+    margin-bottom:10px;
+}
 
-        .pagination button {
-            padding: 4px 12px;
-            font-size: 18px;
-            cursor: pointer;
-        }
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0 10px; /* spacing between rows */
+}
+
+th{
+    background: rgba(255,255,255,0.2);
+    padding:10px;
+    border-radius:8px;
+}
+
+/* ROW STYLE (CARD EFFECT) */
+td{
+    background: rgba(255,255,255,0.1);
+    padding:12px;
+    border:none;
+}
+
+tr{
+    transition:0.3s;
+}
+
+/* HOVER */
+tr:hover td{
+    background: rgba(255,255,255,0.25);
+}
+
+/* LINK */
+a{
+    color:#4dd0e1;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+
+/* COLUMN WIDTH */
+.col-title { width: 40%; }
+.col-author { width: 18%; }
+.col-genre { width: 15%; }
+.col-mood { width: 10%; }
+.col-age { width: 8%; }
+.col-pop { width: 9%; }
+
+/* PAGINATION */
+.pagination{
+    display:flex;
+    justify-content:center; /* CENTERED */
+    align-items:center;
+    margin:25px 0;
+    gap:15px;
+    font-size:16px;
+}
+
+/* PAGINATION BUTTONS */
+.pagination button{
+    padding:8px 16px;
+    border:none;
+    border-radius:8px;
+    background: rgba(255,255,255,0.3);
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.pagination button:hover{
+    background: rgba(255,255,255,0.6);
+}
+
+/* MESSAGE */
+h3, p{
+    color:#e2e8f0;
+}
     </style>
 </head>
 {% extends "base.html" %}
@@ -117,7 +176,7 @@
 
 <hr>
 <center>
-<h2>Similar Books Based on your Search💖.</h2>
+<h2>Similar Books Based on your Search you may like.</h2>
 </center>
 {% if ml_results is not none and ml_results|length > 0 %}
 <table>

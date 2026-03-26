@@ -1,10 +1,143 @@
 {% include "navbar.html" %}
 
-<div style="margin-top:200px;padding:80px;max-width:1000px;margin:auto;">
+<style>
 
-<h2>User Management</h2>
+/* BACKGROUND (USE YOUR LOCAL IMAGE) */
+body{
+    font-family:Arial;
 
-<table border="1" cellpadding="10" style="width:100%;text-align:left;border-collapse:collapse;">
+    background-image: url("{{ url_for('static', filename='images/shelf.jpg') }}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* OVERLAY */
+body::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.6);
+    z-index:-1;
+}
+
+/* CONTAINER */
+.container{
+    margin-top:120px;
+    padding:30px;
+    max-width:1000px;
+    margin-left:auto;
+    margin-right:auto;
+
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    color:white;
+}
+
+/* TITLE */
+h2{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0 10px;
+}
+
+/* HEADER */
+th{
+    background: rgba(255,255,255,0.2);
+    padding:10px;
+    border-radius:8px;
+}
+
+/* ROWS */
+td{
+    background: rgba(255,255,255,0.1);
+    padding:12px;
+    border:none;
+}
+
+/* HOVER */
+tr:hover td{
+    background: rgba(255,255,255,0.25);
+}
+
+/* STATUS BADGES */
+.status-active{
+    color:#4ade80;
+    font-weight:bold;
+}
+
+.status-blocked{
+    color:#f87171;
+    font-weight:bold;
+}
+
+/* ACTION BUTTONS */
+.action-btn{
+    padding:6px 10px;
+    border-radius:6px;
+    text-decoration:none;
+    font-weight:bold;
+    margin-right:5px;
+    display:inline-block;
+    transition:0.3s;
+}
+
+/* BLOCK */
+.block-btn{
+    background:#f59e0b;
+    color:black;
+}
+
+.block-btn:hover{
+    background:#d97706;
+}
+
+/* UNBLOCK */
+.unblock-btn{
+    background:#22c55e;
+    color:white;
+}
+
+.unblock-btn:hover{
+    background:#16a34a;
+}
+
+/* DELETE */
+.delete-btn{
+    background:#ef4444;
+    color:white;
+}
+
+.delete-btn:hover{
+    background:#dc2626;
+}
+
+/* ADMIN LABEL */
+.admin-label{
+    color:#9ca3af;
+    font-weight:bold;
+}
+
+</style>
+
+<div class="container">
+
+<h2>👥 User Management</h2>
+
+<table>
 
 <tr>
 <th>ID</th>
@@ -26,9 +159,9 @@
 
 <td>
 {% if user.status == "blocked" %}
-<span style="color:red;font-weight:bold;">Blocked</span>
+<span class="status-blocked">Blocked</span>
 {% else %}
-<span style="color:green;font-weight:bold;">Active</span>
+<span class="status-active">Active</span>
 {% endif %}
 </td>
 
@@ -39,30 +172,28 @@
     {% if user.status == "active" %}
 
         <a href="/admin/block-user/{{ user.id }}" 
-           style="color:orange;text-decoration:none;font-weight:bold;">
+           class="action-btn block-btn">
            Block
         </a>
 
     {% else %}
 
         <a href="/admin/unblock-user/{{ user.id }}" 
-           style="color:green;text-decoration:none;font-weight:bold;">
+           class="action-btn unblock-btn">
            Unblock
         </a>
 
     {% endif %}
 
-    |
-
     <a href="/admin/delete-user/{{ user.id }}" 
        onclick="return confirm('Delete this user?')"
-       style="color:red;text-decoration:none;font-weight:bold;">
+       class="action-btn delete-btn">
        Delete
     </a>
 
 {% else %}
 
-    <span style="color:gray;font-weight:bold;">Admin</span>
+    <span class="admin-label">Admin</span>
 
 {% endif %}
 

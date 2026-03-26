@@ -2,76 +2,176 @@
 
 {% block content %}
 
-<div style="max-width:500px; margin:auto; text-align:center;">
+<style>
+
+/* Background (same as login) */
+body{
+    font-family:Arial;
+    text-align:center;
+
+    background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f');
+    background-size: cover;
+    background-position: fixed;
+    background-repeat: no-repeat;
+     background-attachment: fixed;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.6);
+    z-index:-1;
+}
+
+/* Glass Container */
+.container{
+    max-width:800px;
+    margin:20px auto;
+    padding:35px;
+    border-radius:50px;
+
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    color:white;
+}
+
+/* Headings */
+h1{
+    color: antiquewhite;
+    letter-spacing:2px;
+}
+
+h2, h3{
+    margin:10px 0;
+}
+
+/* Form */
+.form-group{
+    text-align:left;
+    margin-bottom:15px;
+}
+
+label{
+    font-weight:bold;
+}
+
+input, select{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border:none;
+    border-radius:8px;
+    font-size:14px;
+}
+
+/* Button */
+.search-btn{
+    margin-top:20px;
+    padding:12px;
+    width:100%;
+    font-size:16px;
+    font-weight:bold;
+    border:none;
+    border-radius:10px;
+
+    background: rgba(255,255,255,0.3);
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.search-btn:hover{
+    background: rgba(255,255,255,0.6);
+    transform:scale(1.03);
+}
+
+/* Popular books */
+.book-list{
+    list-style:none;
+    padding:0;
+    margin-top:20px;
+}
+
+.book-list li{
+    margin:8px 0;
+    padding:10px;
+    border-radius:8px;
+    background: rgba(255,255,255,0.1);
+    transition:0.3s;
+}
+
+.book-list li:hover{
+    background: rgba(255,255,255,0.25);
+}
+
+.book-list a{
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+</style>
 
 <h1>-----MiniBooks-----</h1>
+<div class="container">
 
-<h2>Search your books you are looking for ✨</h2>
 
+<h2>Search your books ✨</h2>
 <h3>Using different details</h3>
 
 <hr>
+
 <form action="/recommend" method="post">
-<div>
-<label><b>Book Name</b></label><br>
-<input placeholder="Don't use any special characters" type="text" name="book_name" size="40">
-</div>
-<br>
 
-<div>
-<label><b>Author</b></label><br>
-<input placeholder="Don't use any special characters" type="text" name="author" size="40">
+<div class="form-group">
+<label>Book Name</label>
+<input placeholder="Don't use special characters" type="text" name="book_name">
 </div>
 
-<br>
-
-<div>
-<label><b>Publisher</b></label><br>
-<input placeholder="Don't use any special characters" type="text" name="publisher" size="40">
+<div class="form-group">
+<label>Author</label>
+<input placeholder="Don't use special characters" type="text" name="author">
 </div>
 
-<br> 
-
-<div>
-<label><b>ISBN / ISBN13</b></label><br>
-<input type="text" name="isbn" size="40">
+<div class="form-group">
+<label>Publisher</label>
+<input placeholder="Don't use special characters" type="text" name="publisher">
 </div>
 
-<br>
+<div class="form-group">
+<label>ISBN / ISBN13</label>
+<input type="text" name="isbn">
+</div>
 
-<div>
-<label><b>Mood</b></label><br>
-
+<div class="form-group">
+<label>Mood</label>
 <select name="mood">
 <option value="">Any</option>
-
 {% for m in moods %}
 <option value="{{ m }}">{{ m }}</option>
 {% endfor %}
-
 </select>
 </div>
 
-<br>
-
-<div>
-<label><b>Genre</b></label><br>
-
+<div class="form-group">
+<label>Genre</label>
 <select name="genre">
-
 <option value="">Any</option>
-
 {% for g in genres %}
 <option value="{{ g }}">{{ g }}</option>
 {% endfor %}
-
 </select>
 </div>
 
-<br><br>
-
-<button type="submit" style="font-size:18px; padding:6px 14px;">
-🔍 Search
+<button type="submit" class="search-btn">
+🔍 Search Books
 </button>
 
 </form>
@@ -79,14 +179,13 @@
 <hr>
 
 <h2>🏆 Popular Books</h2>
+<h4>Today’s trending ✨</h4>
 
-<h4>Today trendings ✨</h4>
-
-<ul style="list-style:none; padding:0;">
+<ul class="book-list">
 
 {% for _, row in popular_books.iterrows() %}
 
-<li style="margin:6px 0;">
+<li>
 <a href="/book/{{ row.isbn }}">
 {{ row.title }} — {{ row.authors }}
 </a>

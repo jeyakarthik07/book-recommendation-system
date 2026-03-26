@@ -1,32 +1,159 @@
 {% include "navbar.html" %}
-<center>
-<div style="margin-top:120px;padding:60px;max-width:900px;margin:auto;">
 
-<h2 style="text-align:center;">📊 System Analytics</h2>
+<style>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:40px;">
+/* BACKGROUND */
+body{
+    font-family:Arial;
 
-<div style="padding:25px;background:#f3f3f3;border-radius:10px;text-align:center;">
+    background-image: url("{{ url_for('static', filename='images/shelf.jpg') }}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* OVERLAY */
+body::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.65);
+    z-index:-1;
+}
+
+/* CONTAINER */
+.container{
+    margin-top:120px;
+    padding:30px;
+    max-width:1000px;
+    margin-left:auto;
+    margin-right:auto;
+
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    color:white;
+}
+
+/* TITLE */
+h2{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+/* GRID */
+.analytics-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:25px;
+}
+
+/* CARDS */
+.card{
+    padding:25px;
+    border-radius:15px;
+    text-align:center;
+
+    background: rgba(255,255,255,0.2);
+    box-shadow:0 6px 15px rgba(0,0,0,0.3);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+    background: rgba(255,255,255,0.3);
+}
+
+/* CARD TITLE */
+.card h3{
+    margin-bottom:10px;
+    color:#cbd5f5;
+}
+
+/* CARD VALUE */
+.card h1{
+    font-size:30px;
+    color:#4dd0e1;
+}
+
+/* EXTRA SMALL STATS */
+.extra{
+    margin-top:40px;
+    display:flex;
+    justify-content:space-around;
+    gap:20px;
+}
+
+.extra-box{
+    flex:1;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+
+    background: rgba(255,255,255,0.15);
+}
+
+/* TEXT */
+p{
+    color:#e2e8f0;
+}
+
+</style>
+
+<div class="container">
+
+<h2>📊 System Analytics</h2>
+
+<!-- MAIN STATS -->
+<div class="analytics-grid">
+
+<div class="card">
 <h3>Total Users</h3>
 <h1>{{ total_users }}</h1>
 </div>
 
-<div style="padding:25px;background:#f3f3f3;border-radius:10px;text-align:center;">
+<div class="card">
 <h3>Dataset Books</h3>
 <h1>{{ total_dataset_books }}</h1>
 </div>
 
-<div style="padding:25px;background:#f3f3f3;border-radius:10px;text-align:center;">
+<div class="card">
 <h3>Admin Added Books</h3>
 <h1>{{ total_admin_books }}</h1>
 </div>
 
-<div style="padding:25px;background:#f3f3f3;border-radius:10px;text-align:center;">
+<div class="card">
 <h3>Most Popular Genre</h3>
 <h1>{{ top_genre }}</h1>
 </div>
 
 </div>
 
+<!-- EXTRA INSIGHTS (NO BACKEND CHANGE NEEDED) -->
+<div class="extra">
+
+<div class="extra-box">
+<h4>Total Library Size</h4>
+<p>{{ total_dataset_books + total_admin_books }} Books</p>
 </div>
-</center>
+
+<div class="extra-box">
+<h4>Admin Contribution</h4>
+<p>
+{{ (total_admin_books * 100 // (total_dataset_books + total_admin_books)) if (total_dataset_books + total_admin_books) > 0 else 0 }}%
+</p>
+</div>
+
+<div class="extra-box">
+<h4>User Activity Insight</h4>
+<p>Users are actively exploring books 📚</p>
+</div>
+
+</div>
+
+</div>

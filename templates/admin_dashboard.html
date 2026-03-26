@@ -1,22 +1,138 @@
 {% include "navbar.html" %}
 
-<div style="margin-top:90px; padding:20px; max-width:900px; margin-left:auto; margin-right:auto;">
+<style>
 
-<h1>Admin Dashboard</h1>
+/* BACKGROUND (USE YOUR IMAGE) */
+body{
+    font-family:Arial;
+
+    background-image: url("{{ url_for('static', filename='images/shelf.jpg') }}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* OVERLAY */
+body::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.6);
+    z-index:-1;
+}
+
+/* CONTAINER */
+.container{
+    margin-top:110px;
+    padding:30px;
+    max-width:900px;
+    margin-left:auto;
+    margin-right:auto;
+
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    color:white;
+}
+
+/* TITLE */
+h1{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+/* SECTION TITLE */
+h2{
+    margin-top:25px;
+}
+
+/* STATS CARDS */
+.stats{
+    display:flex;
+    justify-content:space-around;
+    gap:20px;
+    margin-top:20px;
+}
+
+.stat-card{
+    flex:1;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+
+    background: rgba(255,255,255,0.2);
+    box-shadow:0 6px 15px rgba(0,0,0,0.3);
+}
+
+.stat-card h3{
+    margin-bottom:10px;
+    color:#cbd5f5;
+}
+
+.stat-number{
+    font-size:28px;
+    font-weight:bold;
+    color:#4dd0e1;
+}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0 10px;
+    margin-top:15px;
+}
+
+th{
+    background: rgba(255,255,255,0.2);
+    padding:10px;
+    border-radius:8px;
+}
+
+td{
+    background: rgba(255,255,255,0.1);
+    padding:12px;
+}
+
+tr:hover td{
+    background: rgba(255,255,255,0.25);
+}
+
+</style>
+
+<div class="container">
+
+<h1>📊 Admin Dashboard</h1>
 
 <hr>
 
-<h2>Statistics</h2>
+<h2>📈 Statistics</h2>
 
-<p><b>Total Users:</b> {{ total_users }}</p>
+<div class="stats">
 
-<p><b>Total Books:</b> {{ total_books }}</p>
+<div class="stat-card">
+<h3>Total Users</h3>
+<div class="stat-number">{{ total_users }}</div>
+</div>
+
+<div class="stat-card">
+<h3>Total Books</h3>
+<div class="stat-number">{{ total_books }}</div>
+</div>
+
+</div>
 
 <hr>
 
-<h2>Recent Users</h2>
+<h2>👥 Recent Users</h2>
 
-<table border="1" cellpadding="10">
+<table>
 
 <tr>
 <th>Username</th>
